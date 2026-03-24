@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ecommerce-monolith-api
+    env: java
+    buildCommand: mvn clean install -DskipTests
+    startCommand: java -jar target/ecommerce-monolith-0.0.1-SNAPSHOT.jar
+    plans:
+      - name: free
+    envVars:
+      - key: STRIPE_SECRET_KEY
+        scope: run
+      - key: JAVA_OPTS
+        value: -Dserver.port=$PORT
