@@ -23,8 +23,8 @@ WORKDIR /app
 # Copia el JAR compilado desde el builder
 COPY --from=builder /app/target/ecommerce-monolith-*.jar app.jar
 
-# Expone el puerto (Render asigna el puerto via variable de entorno)
+# Expone el puerto (Render asigna el puerto via variable de entorno PORT)
 EXPOSE 8080
 
-# Comando de inicio
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Comando de inicio - las variables de entorno se pasan automáticamente
+CMD ["java", "-jar", "app.jar"]
