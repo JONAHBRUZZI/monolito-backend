@@ -9,5 +9,14 @@ services:
     envVars:
       - key: STRIPE_SECRET_KEY
         scope: run
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://db-postgresql-sfo2-79244-do-user-22261196-0.m.db.ondigitalocean.com:25060/defaultdb?sslmode=require
+        scope: run
+      - key: SPRING_DATASOURCE_USERNAME
+        value: doadmin
+        scope: run
+      - key: SPRING_DATASOURCE_PASSWORD
+        value: ${SPRING_DATASOURCE_PASSWORD}
+        scope: run
       - key: JAVA_OPTS
         value: -Dserver.port=$PORT

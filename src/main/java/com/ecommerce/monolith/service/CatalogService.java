@@ -42,7 +42,13 @@ public class CatalogService {
         inventoryItem.setAvailable(request.initialStock());
         inventoryRepository.save(inventoryItem);
 
-        return new InventoryResponse(savedProduct.getId(), savedProduct.getSku(), savedProduct.getName(), inventoryItem.getAvailable());
+        return new InventoryResponse(
+            savedProduct.getId(),
+            savedProduct.getSku(),
+            savedProduct.getName(),
+            savedProduct.getPrice(),
+            inventoryItem.getAvailable()
+        );
     }
 
     @Transactional(readOnly = true)
@@ -52,6 +58,7 @@ public class CatalogService {
                 item.getProduct().getId(),
                 item.getProduct().getSku(),
                 item.getProduct().getName(),
+                item.getProduct().getPrice(),
                 item.getAvailable()
             ))
             .toList();

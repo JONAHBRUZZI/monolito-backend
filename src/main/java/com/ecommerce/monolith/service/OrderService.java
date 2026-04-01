@@ -15,18 +15,30 @@ import com.ecommerce.monolith.repository.InventoryRepository;
 import com.ecommerce.monolith.repository.OrderRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrderService {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
+
     private final OrderRepository orderRepository;
     private final InventoryRepository inventoryRepository;
+    private final SmartLogixService smartLogixService;
 
-    public OrderService(OrderRepository orderRepository, InventoryRepository inventoryRepository) {
+    public OrderService(
+        OrderRepository orderRepository,
+        InventoryRepository inventoryRepository,
+        SmartLogixService smartLogixService
+    ) {
         this.orderRepository = orderRepository;
         this.inventoryRepository = inventoryRepository;
+        this.smartLogixService = smartLogixService;
     }
 
     @Transactional
@@ -65,6 +77,18 @@ public class OrderService {
 
         order.setTotalAmount(total);
         CustomerOrder saved = orderRepository.save(order);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                try {
+                    smartLogixService.sendOrderNotification(saved);
+                } catch (Exception ex) {
+                    logger.error("Webhook delivery failed for order {}", saved.getId(), ex);
+                }
+            }
+        });
+
         return toResponse(saved);
     }
 

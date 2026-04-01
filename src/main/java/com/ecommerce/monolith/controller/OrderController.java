@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,22 +28,26 @@ public class OrderController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'INTERNAL')")
     public List<OrderResponse> listOrders() {
         return orderService.listOrders();
     }
 
     @GetMapping("/history")
+    @PreAuthorize("isAuthenticated()")
     public List<OrderResponse> listOrderHistory(@RequestParam @Email String email) {
         return orderService.listOrderHistory(email);
     }
 
     @GetMapping("/{orderId}")
+    @PreAuthorize("isAuthenticated()")
     public OrderResponse getOrder(@PathVariable Long orderId) {
         return orderService.getOrder(orderId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("isAuthenticated()")
     public OrderResponse createOrder(@Valid @RequestBody CreateOrderRequest request) {
         return orderService.createOrder(request);
     }

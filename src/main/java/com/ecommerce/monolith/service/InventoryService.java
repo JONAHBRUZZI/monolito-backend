@@ -45,6 +45,7 @@ public class InventoryService {
             item.getProduct().getId(),
             item.getProduct().getSku(),
             item.getProduct().getName(),
+            item.getProduct().getPrice(),
             item.getAvailable()
         );
     }
